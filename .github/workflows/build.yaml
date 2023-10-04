@@ -1,0 +1,28 @@
+# Totally yanked from https://lca-kernel.ozlabs.org/2022-Currey-Abusing-GitHub-Actions-for-building-and-testing-kernels.pdf
+
+name: Build the kernel
+on: [push]
+jobs:
+  kernel:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: sudo apt-get install clang llvm lld fakeroot build-essential ncurses-dev xz-utils libssl-dev bc flex libelf-dev bison
+
+    - name: Switch configs to 16K
+      run: |
+      make ARCH=arm64 LLVM=1 defconfig
+      make ARCH=arm64 LLVM=1 sdm845.config
+
+    - name: Build the 16K kernel
+      run: make ARCH=arm64 LLVM=1 -j$(nproc) Image.gz && mkdir out && cp arch/arm64/boot/Image.gz out/Image.gz
+
+    - name : Upload artifacts
+      uses: actions/upload-artifact@master
+      with:
+        name: kernel
+        path: ./out/Image.gz
