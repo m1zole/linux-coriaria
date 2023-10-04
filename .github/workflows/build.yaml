@@ -15,8 +15,8 @@ jobs:
 
     - name: Switch configs to 16K
       run: |
-      make ARCH=arm64 LLVM=1 defconfig
-      make ARCH=arm64 LLVM=1 sdm845.config
+        make ARCH=arm64 LLVM=1 defconfig
+        make ARCH=arm64 LLVM=1 sdm845.config
 
     - name: Build the 16K kernel
       run: make ARCH=arm64 LLVM=1 -j$(nproc) Image.gz && mkdir out && cp arch/arm64/boot/Image.gz out/Image.gz
